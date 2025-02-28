@@ -83,8 +83,9 @@ def exportar_pdf():
     pdf.ln(3)
     pdf.set_font("Arial", size=9)
     for i, pregunta in enumerate(preguntas):
-        pdf.cell(130, 5, f"{i+1}. {pregunta[:50]}...", ln=False)
-        pdf.cell(50, 5, f"{respuestas[i]}", ln=True)
+        pdf.multi_cell(0, 5, f"{i+1}. {pregunta}")
+        pdf.cell(0, 5, f"Respuesta: {respuestas[i]}", ln=True)
+        pdf.ln(2)
     pdf.ln(5)
     
     if puntaje is not None:
