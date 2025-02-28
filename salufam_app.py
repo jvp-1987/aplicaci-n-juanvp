@@ -63,6 +63,8 @@ else:
     puntaje = None
 
 # Función para exportar resultados a un PDF visualmente mejorado en una sola hoja
+import tempfile
+
 def exportar_pdf():
     pdf = FPDF()
     pdf.add_page()
@@ -84,6 +86,7 @@ def exportar_pdf():
         pdf.cell(130, 5, f"{i+1}. {pregunta[:50]}...", ln=False)
         pdf.cell(50, 5, f"{respuestas[i]}", ln=True)
     pdf.ln(5)
+    
     if puntaje is not None:
         pdf.set_font("Arial", style='B', size=10)
         pdf.cell(200, 7, f"Puntaje Promedio: {puntaje:.2f}", ln=True, align='C')
@@ -94,13 +97,17 @@ def exportar_pdf():
             pdf.set_text_color(0, 128, 0)
             pdf.cell(200, 7, "Resultado: Baja Vulnerabilidad Familiar en Salud", ln=True, align='C')
     pdf.set_text_color(0, 0, 0)
-    pdf_path = os.path.join(downloads_path, f"{rut}_resultado_salufam.pdf")
-    pdf.output(pdf_path)
-    return pdf_path
+
+    # Usar directorio temporal
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
+        pdf.output(tmpfile.name)
+        return tmpfile.name
 
 # Botón para descargar el PDF
 if None not in respuestas:
-    with open(exportar_pdf(), "rb") as f:
+    pdf_file = exportar_pdf()
+    with open(pdf_file, "rb") as f:
         st.download_button("📥 Descargar PDF", f, file_name=f"{rut}_resultado_salufam.pdf", mime="application/pdf")
+
 
 st.write("💡 Aplicación optimizada para la evaluación de la vulnerabilidad familiar en salud con la Escala SALUFAM.")
